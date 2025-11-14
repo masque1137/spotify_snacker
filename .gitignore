@@ -31,12 +31,14 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+
 # Virtual environments
 venv/
 env/
 ENV/
 env.bak/
 venv.bak/
+.venv/
 
 # IDEs
 .vscode/
