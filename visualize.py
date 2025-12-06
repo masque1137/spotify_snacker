@@ -246,7 +246,7 @@ def create_skip_analysis_charts(df, track_column='master_metadata_track_name',
                                 artist_column='master_metadata_album_artist_name',
                                 skipped_column='skipped',
                                 reason_column='reason_end',
-                                top_n=20, output_dir='Results'):
+                                top_n=50, output_dir='Results'):
     """
     Create visualizations analyzing track skipping behavior.
     
@@ -318,7 +318,7 @@ def create_skip_analysis_charts(df, track_column='master_metadata_track_name',
                 y='track',
                 x='skip_rate',
                 orientation='h',
-                title=f'Top {top_n} Least Skipped Tracks (min 10 plays)',
+                title=f'Top {top_n} Least Likely to be Skipped Tracks (min 10 plays)',
                 labels={'track': 'Track - Artist', 'skip_rate': 'Skip Rate'},
                 color='skip_rate',
                 color_continuous_scale='Greens_r'
@@ -333,12 +333,35 @@ def create_skip_analysis_charts(df, track_column='master_metadata_track_name',
             fig.write_html(output_path)
             print(f"Least skipped tracks chart saved to: {output_path}")
             output_paths.append(str(output_path))
+
+        most_skipped = track_stats.nlargest(top_n, 'skip_rate')
+        if not most_skipped.empty:
+            fig = px.bar(
+                most_skipped,
+                y='track',
+                x='skip_rate',
+                orientation='h',
+                title=f'Top {top_n} Most Likely to be Skipped Tracks (min 10 plays)',
+                labels={'track': 'Track - Artist', 'skip_rate': 'Skip Rate'},
+                color='skip_rate',
+                color_continuous_scale='Reds'
+            )
+            
+            fig.update_layout(
+                yaxis={'categoryorder': 'total ascending'},
+                showlegend=False
+            )
+            
+            output_path = Path(output_dir) / 'most_likely_skipped_tracks.html'
+            fig.write_html(output_path)
+            print(f"Most likely skipped tracks chart saved to: {output_path}")
+            output_paths.append(str(output_path))
     
     # Analysis using 'reason_end' column
     if reason_column in df.columns:
         # Tracks most often skipped (based on reason_end)
-        skip_reasons = ['fwdbtn', 'backbtn', 'trackdone']  # Common skip indicators
-        skipped_by_reason = df[df[reason_column].isin(['fwdbtn', 'backbtn'])].copy()
+        skip_reasons = ['fwdbtn']  # Common skip indicators
+        skipped_by_reason = df[df[reason_column].isin(['fwdbtn'])].copy()
         
         if not skipped_by_reason.empty:
             reason_skipped = skipped_by_reason['track_artist'].value_counts().head(top_n).reset_index()
@@ -366,3 +389,35 @@ def create_skip_analysis_charts(df, track_column='master_metadata_track_name',
             output_paths.append(str(output_path))
     
     return output_paths
+
+def create_generic_pie(df, column, title, output_dir='Results'):
+    """
+    Create a generic pie chart for any categorical column.
+    
+    Args:
+        df (pd.DataFrame): The streaming data DataFrame
+        column (str): Name of the categorical column
+        title (str): Title of the pie chart
+        output_dir (str): Directory to save the output HTML file
+        filename (str): Name of the output HTML file
+    """
+    # Count occurrences of each category
+    category_counts = df[column].value_counts().reset_index()
+    category_counts.columns = [column, 'count']
+    
+    # Create pie chart
+    fig = px.pie(
+        category_counts,
+        names=column,
+        values='count',
+        title=title,
+        color_discrete_sequence=px.colors.sequential.RdBu
+    )
+    
+    filename=f'{title}_pie_chart.html'
+    # Save to HTML
+    output_path = Path(output_dir) / filename
+    fig.write_html(output_path)
+    print(f"Pie chart saved to: {output_path}")
+    
+    return str(output_path)

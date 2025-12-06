@@ -3,6 +3,10 @@
 *.pdf
 *.json
 
+#Excluded Folders
+Results/
+Data/
+
 # backups
 *.bak
 

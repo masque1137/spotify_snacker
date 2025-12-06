@@ -4,14 +4,18 @@ from dotenv import load_dotenv
 import pandas as pd
 
 from ingest_data import ingest_streaming_data
-from utility_methods import ensure_results_directory
+from utility_methods import (ensure_results_directory,
+                             filter_by_date_range,
+                             filter_by_bools,
+                             save_data)
 from visualize import (
     create_listening_histogram,
     create_hourly_listening_pattern,
     create_monthly_listening_trend,
     create_top_artists_chart,
     create_top_tracks_chart,
-    create_skip_analysis_charts
+    create_skip_analysis_charts,
+    create_generic_pie
 )
 
 
@@ -68,44 +72,7 @@ def load_date_range():
     return start_date, end_date, timezone
 
 
-def filter_by_date_range(df, start_date=None, end_date=None, date_column='ts'):
-    """
-    Filter the DataFrame by date range.
-    
-    Args:
-        df (pd.DataFrame): The streaming data DataFrame
-        start_date (datetime): Start date for filtering (inclusive)
-        end_date (datetime): End date for filtering (inclusive)
-        date_column (str): Name of the date column to filter on
-        
-    Returns:
-        pd.DataFrame: Filtered DataFrame
-    """
-    if date_column not in df.columns:
-        print(f"Warning: Date column '{date_column}' not found in data.")
-        return df
-    
-    # Convert date column to datetime if it's not already
-    df[date_column] = pd.to_datetime(df[date_column])
-    
-    filtered_df = df.copy()
-    
-    if start_date:
-        # Make start_date timezone-aware if the column has timezone info
-        if filtered_df[date_column].dt.tz is not None:
-            start_date = pd.to_datetime(start_date).tz_localize('UTC')
-        filtered_df = filtered_df[filtered_df[date_column] >= start_date]
-        print(f"Filtered to records from {start_date.date()} onwards")
-    
-    if end_date:
-        # Make end_date timezone-aware if the column has timezone info
-        if filtered_df[date_column].dt.tz is not None:
-            end_date = pd.to_datetime(end_date).tz_localize('UTC')
-        filtered_df = filtered_df[filtered_df[date_column] <= end_date]
-        print(f"Filtered to records up to {end_date.date()}")
-    
-    print(f"Records after date filtering: {len(filtered_df)}")
-    return filtered_df
+
 
 
 def main():
@@ -120,11 +87,15 @@ def main():
     
     # Load date range from .env
     start_date, end_date, timezone = load_date_range()
-    print()
+    if start_date and end_date:
+        date_range = f"{start_date.date()} to {end_date.date()}"
+    if not date_range:
+        date_range = "All available data"
     
     # Ingest streaming data
     print("Ingesting streaming data...")
     df = ingest_streaming_data()
+    save_data(df, title='combined_streaming_data', output_dir=results_dir)
     
     if df.empty:
         print("No data to analyze.")
@@ -135,7 +106,12 @@ def main():
     # Filter by date range if dates are provided
     if start_date or end_date:
         df = filter_by_date_range(df, start_date, end_date)
-        print()
+    
+    # Filter by boolean flags from .env
+    SPOTIFY_DEFINED_PLAY = os.getenv('SPOTIFY_DEFINED_PLAY', 'False').lower() in ('true', '1', 't')
+    MUSIC_ONLY_MODE = os.getenv('MUSIC_ONLY_MODE', 'False').lower() in ('true', '1', 't')
+    df = filter_by_bools(df, spotify_defined_play=SPOTIFY_DEFINED_PLAY, music_only_mode=MUSIC_ONLY_MODE)
+    save_data(df, title='filtered_streaming_data', output_dir=results_dir)
     
     # Create visualizations
     print("Generating visualizations...")
@@ -145,6 +121,9 @@ def main():
     create_top_artists_chart(df, output_dir=results_dir)
     create_top_tracks_chart(df, output_dir=results_dir)
     create_skip_analysis_charts(df, output_dir=results_dir)
+    create_generic_pie(df, column='platform', title=f'Listening by Platform from {date_range}', output_dir=results_dir)
+    create_generic_pie(df, column='conn_country', title=f'Listening by Country from {date_range}', output_dir=results_dir)
+    create_generic_pie(df, column='reason_end', title=f'Listening by Reason End from {date_range}', output_dir=results_dir)
     print()
     
     # TODO: Add analysis logic here
