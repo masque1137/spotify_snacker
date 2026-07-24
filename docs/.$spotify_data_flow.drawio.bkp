@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net" agent="GitHub Copilot" version="27.0.5">
+  <diagram id="spotify-data-flow" name="Spotify Data Flow">
+    <mxGraphModel dx="1436" dy="796" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Spotify Snacker Data Flow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="360" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="input-data" value="Input Data&#xa;Data/Spotify Extended Streaming History/*.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="input-env" value="Configuration&#xa;.env&#xa;YEAR / START_DATE / END_DATE&#xa;TIMEZONE / filters" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="250" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="main" value="analyze.py&#xa;Main orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="185" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ingest" value="ingest_data.py&#xa;ingest_streaming_data()&#xa;Read JSON files into one DataFrame" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="70" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="utils" value="utility_methods.py&#xa;ensure_results_directory()&#xa;filter_by_date_range()&#xa;filter_by_bools()&#xa;save_data()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="190" width="270" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="viz" value="visualize.py&#xa;Plotly chart builders" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="360" width="270" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="csv-out" value="Intermediate Outputs&#xa;Results/combined_streaming_data.csv&#xa;Results/filtered_streaming_data.csv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d9ead3;strokeColor=#6aa84f;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="150" width="320" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="html-out" value="Visualization Outputs&#xa;Results/*.html&#xa;histogram, hourly, monthly,&#xa;top artists, top tracks, skip charts, pie charts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d9ead3;strokeColor=#6aa84f;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="320" width="320" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="account-note" value="Reference Data&#xa;Data/Spotify Account Data/*.json&#xa;Present in repo, not used by current pipeline" style="shape=note;whiteSpace=wrap;html=1;fillColor=#fce5cd;strokeColor=#c27ba0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="250" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="reads files" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="input-data" target="main" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="loads settings" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="input-env" target="main" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="calls" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="main" target="ingest" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="ensures dir, filters, saves CSV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="main" target="utils" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="builds charts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="main" target="viz" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="combined + filtered snapshots" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="utils" target="csv-out" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="HTML visualizations" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="viz" target="html-out" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="returns DataFrame" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;strokeWidth=2;" edge="1" source="ingest" target="utils" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
