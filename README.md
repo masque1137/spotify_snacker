@@ -101,6 +101,10 @@ python analyze.py
 
 Results will be saved to the `Results/` directory as interactive HTML files.
 
+## Documentation
+
+- Data flow diagram: `docs/spotify_data_flow.drawio`
+
 ## Project Structure
 
 ```
@@ -109,6 +113,8 @@ spotify_snacker/
 ├── ingest_data.py          # Data ingestion functions
 ├── visualize.py            # Visualization generation
 ├── utility_methods.py      # Helper functions (filtering, saving)
+├── docs/
+│   └── spotify_data_flow.drawio
 ├── Data/
 │   └── Spotify Extended Streaming History/
 │       └── Streaming_History_Audio_*.json
