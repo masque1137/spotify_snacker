@@ -26,6 +26,8 @@ The tool generates interactive HTML visualizations using Plotly:
 #### Content Analysis
 - **Top Artists**: Your most-played artists
 - **Top Tracks**: Your most-played songs (with artist attribution)
+- **First Heard vs Yearly Rank**: See when you first discovered top tracks relative to their rank in each year
+- **Same-Year Discovery Rate**: Percentage of yearly top tracks that were first heard in that same year
 - **Platform Distribution**: Where you listen (desktop, mobile, web, etc.)
 - **Country Distribution**: Geographic breakdown of listening sessions
 - **Reason End Analysis**: How your listening sessions end (completed, skipped, etc.)
@@ -132,6 +134,8 @@ All visualizations are saved as interactive HTML files in the `Results/` directo
 - `monthly_listening_trend.html` - Monthly trends
 - `top_artists.html` - Top 20 artists
 - `top_tracks.html` - Top 20 tracks
+- `top_tracks_first_heard_by_year.html` - First listen date compared to yearly top-track rank
+- `top_tracks_first_heard_same_year_percentage.html` - Share of yearly top tracks first heard in the same year
 - `most_skipped_tracks.html` - Most skipped content
 - `least_skipped_tracks.html` - Least skipped content
 - `most_likely_skipped_tracks.html` - Highest skip rate tracks

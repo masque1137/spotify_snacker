@@ -14,6 +14,8 @@ from visualize import (
     create_monthly_listening_trend,
     create_top_artists_chart,
     create_top_tracks_chart,
+    create_top_tracks_first_heard_by_year_chart,
+    create_top_tracks_first_heard_same_year_percentage_chart,
     create_skip_analysis_charts,
     create_generic_pie
 )
@@ -102,6 +104,8 @@ def main():
         return
     
     print()
+
+    first_heard_df = df.copy()
     
     # Filter by date range if dates are provided
     if start_date or end_date:
@@ -120,6 +124,8 @@ def main():
     create_monthly_listening_trend(df, output_dir=results_dir)
     create_top_artists_chart(df, output_dir=results_dir)
     create_top_tracks_chart(df, output_dir=results_dir)
+    create_top_tracks_first_heard_by_year_chart(df, first_heard_df=first_heard_df, output_dir=results_dir)
+    create_top_tracks_first_heard_same_year_percentage_chart(df, first_heard_df=first_heard_df, output_dir=results_dir)
     create_skip_analysis_charts(df, output_dir=results_dir)
     create_generic_pie(df, column='platform', title=f'Listening by Platform from {date_range}', output_dir=results_dir)
     create_generic_pie(df, column='conn_country', title=f'Listening by Country from {date_range}', output_dir=results_dir)
